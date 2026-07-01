@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ricerca Articoli</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Ricerca Articoli nel Mondo</h1>
+    <p class="subtitle">Inserisci una o più parole chiave per cercare articoli e notizie da testate di tutto il mondo, poi estrai il testo completo.</p>
+  </header>
+
+  <main>
+    <form id="search-form">
+      <input type="text" id="query-input" placeholder="Es. intelligenza artificiale, elezioni, cambiamento climatico..." autocomplete="off" required />
+      <button type="submit" id="search-btn">Cerca</button>
+    </form>
+
+    <div class="time-filter" role="group" aria-label="Filtro periodo">
+      <span class="time-filter-label">Periodo:</span>
+      <button type="button" class="time-btn" data-timeframe="today">Oggi</button>
+      <button type="button" class="time-btn" data-timeframe="week">Settimana</button>
+      <button type="button" class="time-btn" data-timeframe="month">Mese</button>
+      <button type="button" class="time-btn" data-timeframe="year">Anno</button>
+      <button type="button" class="time-btn active" data-timeframe="all">Sempre</button>
+    </div>
+
+    <p id="status" class="status" aria-live="polite"></p>
+
+    <ul id="results" class="results"></ul>
+  </main>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <button id="modal-close" class="modal-close" aria-label="Chiudi">&times;</button>
+      <div id="modal-body">
+        <p>Caricamento testo completo...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
