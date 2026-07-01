@@ -19,7 +19,7 @@ app.get('/api/search', async (req, res) => {
   }
 
   try {
-    const results = await searchArticles(query, { timeframe, limit: 60 });
+    const results = await searchArticles(query, { timeframe, limit: 150 });
     res.json({ query, timeframe, count: results.length, results });
   } catch (err) {
     console.error('Errore ricerca:', err.message);

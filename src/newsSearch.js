@@ -1,4 +1,5 @@
 const Parser = require('rss-parser');
+const { searchWeb } = require('./webSearch');
 
 const parser = new Parser({
   timeout: 15000,
@@ -78,11 +79,32 @@ async function fetchFeed(query, edition) {
   }
 }
 
+function normalizeLink(link) {
+  try {
+    const url = new URL(link);
+    url.hash = '';
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid'].forEach((p) =>
+      url.searchParams.delete(p)
+    );
+    let normalized = url.toString().toLowerCase();
+    if (normalized.endsWith('/')) normalized = normalized.slice(0, -1);
+    return normalized;
+  } catch {
+    return (link || '').toLowerCase();
+  }
+}
+
+// I link di Google News sono redirect univoci per edizione (stesso articolo = URL diversi),
+// quindi per quelli usiamo titolo+fonte come chiave; per link "reali" (DuckDuckGo, siti diretti)
+// deduplichiamo sull'URL normalizzato, che e' un identificativo piu' affidabile.
 function dedupe(results) {
   const seen = new Set();
   const unique = [];
   for (const item of results) {
-    const key = `${(item.title || '').trim().toLowerCase()}|${(item.source || '').trim().toLowerCase()}`;
+    if (!item.link) continue;
+    const key = item.link.includes('news.google.com')
+      ? `t:${(item.title || '').trim().toLowerCase()}|${(item.source || '').trim().toLowerCase()}`
+      : `l:${normalizeLink(item.link)}`;
     if (seen.has(key)) continue;
     seen.add(key);
     unique.push(item);
@@ -90,18 +112,28 @@ function dedupe(results) {
   return unique;
 }
 
-async function searchArticles(query, { timeframe = 'all', limit = 60 } = {}) {
-  const timeSuffix = TIME_FILTERS[timeframe] ?? TIME_FILTERS.all;
-  const finalQuery = timeSuffix ? `${query} ${timeSuffix}` : query;
+// Racchiude la query tra virgolette per forzare una corrispondenza esatta della parola/frase
+// cercata, invece di lasciare che il motore la espanda con sinonimi o termini correlati.
+function toLiteralQuery(query) {
+  const trimmed = query.trim();
+  return trimmed.includes('"') ? trimmed : `"${trimmed}"`;
+}
 
+async function searchArticles(query, { timeframe = 'all', limit = 150 } = {}) {
+  const literalQuery = toLiteralQuery(query);
+  const timeSuffix = TIME_FILTERS[timeframe] ?? TIME_FILTERS.all;
+  const finalQuery = timeSuffix ? `${literalQuery} ${timeSuffix}` : literalQuery;
+
+  const swissSitesGroup = `(${FEATURED_SWISS_SITES.map((site) => `site:${site}`).join(' OR ')})`;
   const swissQuery = timeSuffix
-    ? `(${FEATURED_SWISS_SITES.map((site) => `site:${site}`).join(' OR ')}) ${query} ${timeSuffix}`
-    : `(${FEATURED_SWISS_SITES.map((site) => `site:${site}`).join(' OR ')}) ${query}`;
+    ? `${swissSitesGroup} ${literalQuery} ${timeSuffix}`
+    : `${swissSitesGroup} ${literalQuery}`;
 
   const feedRequests = [
     ...WORLD_EDITIONS.map((edition) => fetchFeed(finalQuery, edition)),
     ...SWISS_EDITIONS.map((edition) => fetchFeed(finalQuery, edition)),
     fetchFeed(swissQuery, SWISS_EDITIONS[0]),
+    searchWeb(literalQuery, { timeframe, limit: 60 }),
   ];
 
   const feedResults = await Promise.all(feedRequests);
