@@ -4,6 +4,9 @@
   "description": "Cerca articoli e notizie da tutto il mondo tramite parole chiave ed estrai il testo completo dei documenti trovati.",
   "type": "commonjs",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js"
