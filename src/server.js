@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express');
-const { searchArticles } = require('./newsSearch');
+const { searchArticles, TIME_FILTERS } = require('./newsSearch');
 const { extractArticle } = require('./extractor');
 
 const app = express();
@@ -11,15 +11,16 @@ app.use(express.json());
 
 app.get('/api/search', async (req, res) => {
   const query = (req.query.q || '').toString().trim();
-  const edition = (req.query.edition || 'it').toString();
+  const timeframeRaw = (req.query.timeframe || 'all').toString();
+  const timeframe = Object.prototype.hasOwnProperty.call(TIME_FILTERS, timeframeRaw) ? timeframeRaw : 'all';
 
   if (!query) {
     return res.status(400).json({ error: 'Il parametro "q" (parole chiave) e\' obbligatorio.' });
   }
 
   try {
-    const results = await searchArticles(query, { edition, limit: 25 });
-    res.json({ query, edition, count: results.length, results });
+    const results = await searchArticles(query, { timeframe, limit: 60 });
+    res.json({ query, timeframe, count: results.length, results });
   } catch (err) {
     console.error('Errore ricerca:', err.message);
     res.status(502).json({ error: 'Ricerca non riuscita. Riprova tra qualche istante.' });

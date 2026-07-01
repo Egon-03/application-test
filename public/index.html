@@ -15,12 +15,17 @@
   <main>
     <form id="search-form">
       <input type="text" id="query-input" placeholder="Es. intelligenza artificiale, elezioni, cambiamento climatico..." autocomplete="off" required />
-      <select id="edition-select" title="Edizione della ricerca">
-        <option value="it">Italiano</option>
-        <option value="en">Inglese (globale)</option>
-      </select>
       <button type="submit" id="search-btn">Cerca</button>
     </form>
+
+    <div class="time-filter" role="group" aria-label="Filtro periodo">
+      <span class="time-filter-label">Periodo:</span>
+      <button type="button" class="time-btn" data-timeframe="today">Oggi</button>
+      <button type="button" class="time-btn" data-timeframe="week">Settimana</button>
+      <button type="button" class="time-btn" data-timeframe="month">Mese</button>
+      <button type="button" class="time-btn" data-timeframe="year">Anno</button>
+      <button type="button" class="time-btn active" data-timeframe="all">Sempre</button>
+    </div>
 
     <p id="status" class="status" aria-live="polite"></p>
 

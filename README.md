@@ -4,7 +4,8 @@ Web app per cercare articoli e notizie da testate di tutto il mondo a partire da
 
 ## Come funziona
 
-- **Ricerca**: interroga il feed RSS pubblico di Google News (`news.google.com/rss/search`), che aggrega migliaia di testate giornalistiche e siti d'informazione a livello mondiale. Non richiede alcuna API key.
+- **Ricerca**: interroga in parallelo più edizioni del feed RSS pubblico di Google News (`news.google.com/rss/search`) — italiano, inglese, francese e tedesco a livello mondiale, più le edizioni svizzere (IT/FR/DE-CH) e una query mirata sulle testate ticinesi (RSI, TIO.CH, laRegione.ch, Corriere del Ticino) — per garantire copertura sia globale che svizzera. I risultati vengono uniti, deduplicati e ordinati per data. Non richiede alcuna API key.
+- **Filtro periodo**: puoi limitare i risultati ad oggi, ultima settimana, ultimo mese, ultimo anno oppure a tutto il periodo disponibile.
 - **Estrazione testo completo**: per ogni articolo selezionato, il server scarica la pagina originale e ne estrae il contenuto pulito (senza menu, pubblicità, ecc.) usando [Readability](https://github.com/mozilla/readability) di Mozilla — lo stesso motore della "modalità lettura" di Firefox.
 - Il testo estratto può essere scaricato come file `.txt`.
 
@@ -30,7 +31,7 @@ npm run dev
 ## Note
 
 - L'estrazione del testo completo dipende dalla struttura di ciascun sito e potrebbe non riuscire su pagine con paywall stretti o protezioni anti-bot.
-- La ricerca usa l'edizione italiana di Google News per default; è possibile selezionare l'edizione inglese (globale) per risultati internazionali più ampi.
+- Ogni ricerca interroga 8 feed RSS in parallelo (4 edizioni mondiali + 3 svizzere + 1 mirata sulla stampa ticinese), quindi può richiedere qualche secondo in più rispetto a una ricerca su una singola edizione.
 
 ## Deploy pubblico da GitHub (link sempre attivo)
 

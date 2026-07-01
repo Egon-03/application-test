@@ -1,9 +1,11 @@
 const form = document.getElementById('search-form');
 const queryInput = document.getElementById('query-input');
-const editionSelect = document.getElementById('edition-select');
+const timeButtons = document.querySelectorAll('.time-btn');
 const searchBtn = document.getElementById('search-btn');
 const statusEl = document.getElementById('status');
 const resultsEl = document.getElementById('results');
+
+let currentTimeframe = 'all';
 
 const modal = document.getElementById('modal');
 const modalBody = document.getElementById('modal-body');
@@ -88,8 +90,7 @@ modal.addEventListener('click', (e) => {
   if (e.target === modal) modal.classList.add('hidden');
 });
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+async function runSearch() {
   const query = queryInput.value.trim();
   if (!query) return;
 
@@ -98,7 +99,7 @@ form.addEventListener('submit', async (e) => {
   resultsEl.innerHTML = '';
 
   try {
-    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&edition=${editionSelect.value}`);
+    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&timeframe=${currentTimeframe}`);
     const data = await res.json();
 
     if (!res.ok) {
@@ -117,4 +118,21 @@ form.addEventListener('submit', async (e) => {
   } finally {
     searchBtn.disabled = false;
   }
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  runSearch();
+});
+
+timeButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return;
+    timeButtons.forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTimeframe = btn.dataset.timeframe;
+    if (queryInput.value.trim()) {
+      runSearch();
+    }
+  });
 });

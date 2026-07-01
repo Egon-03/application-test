@@ -55,14 +55,6 @@ main {
   font-size: 1rem;
 }
 
-#edition-select {
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--text);
-}
-
 button {
   cursor: pointer;
   border: none;
@@ -77,6 +69,37 @@ button {
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.time-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.time-filter-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-right: 0.25rem;
+}
+
+.time-btn {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 999px;
+}
+
+.time-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .status {
